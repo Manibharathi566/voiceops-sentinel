@@ -1,21 +1,21 @@
 import streamlit as st
 import time
+import whisper
 
-# Page configuration
 st.set_page_config(
     page_title="VoiceOps Sentinel",
     page_icon="🎙️",
     layout="wide"
 )
 
-# Title
+
 st.title("🎙️ VoiceOps Sentinel")
 
 st.write(
     "Real-Time Call Intelligence System"
 )
 
-# Upload Section
+
 st.header("📂 Upload Customer Call")
 audio_file = st.file_uploader(
     "Choose an audio file",
@@ -24,6 +24,34 @@ audio_file = st.file_uploader(
 
 if audio_file is not None:
 
+    st.subheader("🤖 AI Speech Recognition")
+
+    
+
+    transcribe_btn = st.button("Generate Transcript")
+
+if transcribe_btn:
+        
+    st.info("Loading Whisper AI model...")
+
+    whisper_model = whisper.load_model("tiny")
+
+    st.info("Whisper AI model loaded successfully!")
+
+
+    temp_audio = "temp_audio.mp3"
+
+    with open(temp_audio, "wb") as f:
+        f.write(audio_file.getbuffer())
+    
+    st.info("Transcribing audio...")
+
+    result = whisper_model.transcribe(temp_audio)
+
+    st.subheader("Transcript")
+
+    st.write(result["text"])
+    
     st.success("Audio uploaded successfully!")
 
     st.subheader("📋 Audio Information")
