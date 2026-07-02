@@ -50,10 +50,15 @@ if transcribe_btn:
 
     result = whisper_model.transcribe(temp_audio)
 
+    with open("transcript.txt", "w") as f:
+        f.write(result["text"])
+
     st.subheader("Transcript")
 
-    st.write(result["text"])
-    
+    st.text_area("Generated Transcript", result["text"], height=200)
+
+    st.download_button("Download Transcript", result["text"], file_name="transcript.txt", mime="text/plain")
+
     st.success("Audio uploaded successfully!")
 
     st.subheader("📋 Audio Information")
