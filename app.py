@@ -1,6 +1,8 @@
 import streamlit as st
 import time
 import whisper
+import os
+os.environ["PATH"] += os.pathsep + r"D:\ffmpeg-8.1.2-essentials_build\ffmpeg-8.1.2-essentials_build\bin"
 
 st.set_page_config(
     page_title="VoiceOps Sentinel",
