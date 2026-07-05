@@ -2,6 +2,12 @@ import streamlit as st
 import time
 import whisper
 import os
+
+def generate_summary(text):
+    sentences = text.split(".")
+    summary = ". ".join(sentences[:3])
+    return summary
+
 os.environ["PATH"] += os.pathsep + r"D:\ffmpeg-8.1.2-essentials_build\ffmpeg-8.1.2-essentials_build\bin"
 
 st.set_page_config(
@@ -50,14 +56,22 @@ if transcribe_btn:
 
     result = whisper_model.transcribe(temp_audio)
 
+    summary = generate_summary(result["text"])
+
     with open("transcript.txt", "w") as f:
         f.write(result["text"])
+
+
 
     st.subheader("Transcript")
 
     st.text_area("Generated Transcript", result["text"], height=200)
 
     st.download_button("Download Transcript", result["text"], file_name="transcript.txt", mime="text/plain")
+
+    
+    st.subheader("AI Summary")
+    st.write(summary)    
 
     st.success("Audio uploaded successfully!")
 
