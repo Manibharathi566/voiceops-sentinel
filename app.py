@@ -29,7 +29,7 @@ def analyze_sentiment(text):
 
 
 
-st.title("🎙️ VoiceOps Sentinel")
+
 
 os.environ["PATH"] += os.pathsep + r"D:\ffmpeg-8.1.2-essentials_build\ffmpeg-8.1.2-essentials_build\bin"
 
@@ -38,6 +38,9 @@ st.set_page_config(
     page_icon="🎙️",
     layout="wide"
 )
+
+st.title("🎙️ VoiceOps Sentinel")
+st.caption("AI-Powered Speech Analytics Platform")
 
 
 
@@ -62,15 +65,19 @@ if audio_file is not None:
 transcribe_btn = st.button("Generate Transcript")
 
 if transcribe_btn:
-        
-    st.info("Loading Whisper AI model...")
 
-    whisper_model = whisper.load_model("tiny")
+    with st.spinner("Processing audio using AI..."):
+
+        whisper_model = whisper.load_model("tiny")
+        
+        temp_audio = "temp_audio.mp3"
+
+        result = whisper_model.transcribe(temp_audio)
 
     st.info("Whisper AI model loaded successfully!")
 
 
-    temp_audio = "temp_audio.mp3"
+        
 
     with open(temp_audio, "wb") as f:
         f.write(audio_file.getbuffer())
@@ -97,9 +104,12 @@ if transcribe_btn:
     
     st.subheader("AI Summary")
     st.write(summary)    
+    st.divider()
 
     st.subheader("Sentiment Analysis")
     st.write(sentiment)
+    st.divider()
+
     st.success("Audio uploaded successfully!")
 
     st.subheader("📋 Audio Information")
