@@ -27,6 +27,30 @@ def analyze_sentiment(text):
     else:
         return "😐 Neutral"
 
+def word_frequency(text):
+    words = text.lower().split()
+
+    stop_words = {
+        "the", "is", "a", "an", "and", "to", "of",
+        "in", "for", "on", "with", "this", "that",
+        "it", "are", "was"
+    }
+
+    frequency = {}
+
+    for word in words:
+        word = word.strip(".,!?()[]{}\"'")
+
+        if word and word not in stop_words:
+            frequency[word] = frequency.get(word, 0) + 1
+
+    return dict(
+        sorted(
+            frequency.items(),
+            key=lambda item: item[1],
+            reverse=True
+        )[:10]
+    )
 
 
 
@@ -68,38 +92,41 @@ if transcribe_btn:
 
     with st.spinner("Processing audio using AI..."):
 
-        whisper_model = whisper.load_model("tiny")
-        
         temp_audio = "temp_audio.mp3"
 
-        result = whisper_model.transcribe(temp_audio)
+    with open(temp_audio, "wb") as f:
+        f.write(audio_file.getbuffer())
 
+    whisper_model = whisper.load_model("tiny")
+
+    result = whisper_model.transcribe(temp_audio)
     st.info("Whisper AI model loaded successfully!")
 
 
         
 
-    with open(temp_audio, "wb") as f:
-        f.write(audio_file.getbuffer())
-    
+
     st.info("Transcribing audio...")
 
-    result = whisper_model.transcribe(temp_audio)
 
-    summary = generate_summary(result["text"])
+    transcript = result["text"]
 
-    sentiment = analyze_sentiment(result["text"])
+    summary = generate_summary(transcript)
+
+    sentiment = analyze_sentiment(transcript)
+
+    word_stats = word_frequency(transcript)
 
     with open("transcript.txt", "w") as f:
-        f.write(result["text"])
+        f.write(transcript)
 
 
 
     st.subheader("Transcript")
 
-    st.text_area("Generated Transcript", result["text"], height=200)
+    st.text_area("Generated Transcript", transcript, height=200)
 
-    st.download_button("Download Transcript", result["text"], file_name="transcript.txt", mime="text/plain")
+    st.download_button("Download Transcript", transcript, file_name="transcript.txt", mime="text/plain")
 
     
     st.subheader("AI Summary")
@@ -109,6 +136,12 @@ if transcribe_btn:
     st.subheader("Sentiment Analysis")
     st.write(sentiment)
     st.divider()
+
+    st.divider()
+
+    st.subheader("Top 10 Frequently Used Words")
+
+    st.write(word_stats)
 
     st.success("Audio uploaded successfully!")
 
