@@ -4,3 +4,8 @@ __pycache__/
 *.pyc
 temp_audio.mp3
 transcript.txt
+temp_audio.wav
+
+temp_audio.flac
+transcript.txt
+sample-speech-1m.wav
