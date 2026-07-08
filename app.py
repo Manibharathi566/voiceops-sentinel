@@ -66,6 +66,18 @@ st.set_page_config(
 st.title("🎙️ VoiceOps Sentinel")
 st.caption("AI-Powered Speech Analytics Platform")
 
+if "transcript" not in st.session_state:
+    st.session_state.transcript = ""
+
+if "summary" not in st.session_state:
+    st.session_state.summary = ""
+
+if "sentiment" not in st.session_state:
+    st.session_state.sentiment = ""
+
+if "word_stats" not in st.session_state:
+    st.session_state.word_stats = {}
+
 
 
 
@@ -92,22 +104,14 @@ if transcribe_btn:
 
     with st.spinner("Processing audio using AI..."):
 
-        temp_audio = "temp_audio.mp3"
+        file_extension = audio_file.name.split(".")[-1]
+        temp_audio = f"temp_audio.{file_extension}"
 
-    with open(temp_audio, "wb") as f:
-        f.write(audio_file.getbuffer())
+        with open(temp_audio, "wb") as f:
+            f.write(audio_file.getbuffer())
 
-    whisper_model = whisper.load_model("tiny")
-
-    result = whisper_model.transcribe(temp_audio)
-    st.info("Whisper AI model loaded successfully!")
-
-
-        
-
-
-    st.info("Transcribing audio...")
-
+        whisper_model = whisper.load_model("tiny")
+        result = whisper_model.transcribe(temp_audio)
 
     transcript = result["text"]
 
@@ -117,33 +121,67 @@ if transcribe_btn:
 
     word_stats = word_frequency(transcript)
 
+    # Save everything in Session State
+    st.session_state.transcript = transcript
+    st.session_state.summary = summary
+    st.session_state.sentiment = sentiment
+    st.session_state.word_stats = word_stats
+
     with open("transcript.txt", "w") as f:
         f.write(transcript)
 
+# -----------------------------
+# Display Results
+# -----------------------------
 
+if st.session_state.transcript != "":
+
+    st.success("✅ Audio processed successfully!")
 
     st.subheader("Transcript")
 
-    st.text_area("Generated Transcript", transcript, height=200)
+    st.text_area(
+        "Generated Transcript",
+        st.session_state.transcript,
+        height=200
+    )
 
-    st.download_button("Download Transcript", transcript, file_name="transcript.txt", mime="text/plain")
+    st.download_button(
+        "Download Transcript",
+        st.session_state.transcript,
+        file_name="transcript.txt",
+        mime="text/plain"
+    )
 
-    
+    st.divider()
+
+    st.subheader("🔍 Search in Transcript")
+
+    search_word = st.text_input("Enter a word to search")
+
+    if search_word:
+
+        if search_word.lower() in st.session_state.transcript.lower():
+            st.success(f"'{search_word}' found in transcript.")
+        else:
+            st.error(f"'{search_word}' not found.")
+
+    st.divider()
+
     st.subheader("AI Summary")
-    st.write(summary)    
+    st.write(st.session_state.summary)
+
     st.divider()
 
     st.subheader("Sentiment Analysis")
-    st.write(sentiment)
-    st.divider()
+    st.write(st.session_state.sentiment)
 
     st.divider()
 
     st.subheader("Top 10 Frequently Used Words")
+    st.write(st.session_state.word_stats)
 
-    st.write(word_stats)
-
-    st.success("Audio uploaded successfully!")
+    st.divider()
 
     st.subheader("📋 Audio Information")
 
@@ -169,6 +207,6 @@ if transcribe_btn:
     progress = st.progress(0)
 
     for i in range(100):
-        progress.progress(i+1)
+        progress.progress(i + 1)
 
     st.success("✅ Ready for Whisper Transcription")
