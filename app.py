@@ -3,6 +3,7 @@ import time
 import whisper
 import os
 from textblob import TextBlob
+import matplotlib.pyplot as plt
 
 
 
@@ -130,9 +131,6 @@ if transcribe_btn:
     with open("transcript.txt", "w") as f:
         f.write(transcript)
 
-# -----------------------------
-# Display Results
-# -----------------------------
 
 if st.session_state.transcript != "":
 
@@ -178,10 +176,22 @@ if st.session_state.transcript != "":
 
     st.divider()
 
-    st.subheader("Top 10 Frequently Used Words")
-    st.write(st.session_state.word_stats)
+    st.subheader("📊 Top 10 Frequently Used Words")
 
-    st.divider()
+    words = list(st.session_state.word_stats.keys())
+    counts = list(st.session_state.word_stats.values())
+
+    fig, ax = plt.subplots()
+
+    ax.bar(words, counts)
+
+    ax.set_xlabel("Words")
+    ax.set_ylabel("Frequency")
+    ax.set_title("Word Frequency")
+
+    plt.xticks(rotation=45)
+
+    st.pyplot(fig)
 
     st.subheader("📋 Audio Information")
 
