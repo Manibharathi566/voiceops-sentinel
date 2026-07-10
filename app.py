@@ -29,6 +29,7 @@ def analyze_sentiment(text):
         return "😐 Neutral"
 
 def word_frequency(text):
+
     words = text.lower().split()
 
     stop_words = {
@@ -54,6 +55,15 @@ def word_frequency(text):
     )
 
 
+def call_statistics(text):
+
+    total_words = len(text.split())
+
+    total_characters = len(text)
+
+    speaking_time = round(total_words / 2.5)
+
+    return total_words, total_characters, speaking_time
 
 
 os.environ["PATH"] += os.pathsep + r"D:\ffmpeg-8.1.2-essentials_build\ffmpeg-8.1.2-essentials_build\bin"
@@ -79,6 +89,14 @@ if "sentiment" not in st.session_state:
 if "word_stats" not in st.session_state:
     st.session_state.word_stats = {}
 
+if "total_words" not in st.session_state:
+    st.session_state.total_words = 0
+
+if "total_characters" not in st.session_state:
+    st.session_state.total_characters = 0
+
+if "speaking_time" not in st.session_state:
+    st.session_state.speaking_time = 0
 
 
 
@@ -121,12 +139,20 @@ if transcribe_btn:
     sentiment = analyze_sentiment(transcript)
 
     word_stats = word_frequency(transcript)
+   
+    total_words, total_characters, speaking_time = call_statistics(transcript)
 
-    # Save everything in Session State
+
     st.session_state.transcript = transcript
     st.session_state.summary = summary
     st.session_state.sentiment = sentiment
+    st.write("Word Stats:", word_stats)
+    st.write("Type:", type(word_stats).__name__)
     st.session_state.word_stats = word_stats
+
+    st.session_state.total_words = total_words
+    st.session_state.total_characters = total_characters
+    st.session_state.speaking_time = speaking_time
 
     with open("transcript.txt", "w") as f:
         f.write(transcript)
@@ -178,20 +204,50 @@ if st.session_state.transcript != "":
 
     st.subheader("📊 Top 10 Frequently Used Words")
 
-    words = list(st.session_state.word_stats.keys())
-    counts = list(st.session_state.word_stats.values())
+    if st.session_state.word_stats:
 
-    fig, ax = plt.subplots()
+        words = list(st.session_state.word_stats.keys())
+        counts = list(st.session_state.word_stats.values())
+ 
+        fig, ax = plt.subplots(figsize=(10, 5))
 
-    ax.bar(words, counts)
+        ax.bar(words, counts)
 
-    ax.set_xlabel("Words")
-    ax.set_ylabel("Frequency")
-    ax.set_title("Word Frequency")
+        ax.set_xlabel("Words") 
+        ax.set_ylabel("Frequency")
+        ax.set_title("Word Frequency")
 
-    plt.xticks(rotation=45)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
 
-    st.pyplot(fig)
+        st.pyplot(fig)
+
+    else:
+        st.warning("No word frequency data available.")
+
+    st.divider()
+
+    st.subheader("📊 Call Statistics")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+        "Total Words",
+        st.session_state.total_words
+    )
+
+    with col2:
+        st.metric(
+        "Characters",
+        st.session_state.total_characters
+    )
+
+    with col3:
+        st.metric(
+        "Estimated Speaking Time",
+        f"{st.session_state.speaking_time} sec"
+    )
 
     st.subheader("📋 Audio Information")
 
