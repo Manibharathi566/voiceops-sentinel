@@ -65,6 +65,16 @@ def call_statistics(text):
 
     return total_words, total_characters, speaking_time
 
+def highlight_word(text, search_word):
+
+    if not search_word:
+        return text
+
+    return text.replace(
+        search_word,
+        f"🔶{search_word.upper()}🔶"
+    )
+
 
 os.environ["PATH"] += os.pathsep + r"D:\ffmpeg-8.1.2-essentials_build\ffmpeg-8.1.2-essentials_build\bin"
 
@@ -186,10 +196,25 @@ if st.session_state.transcript != "":
     if search_word:
 
         if search_word.lower() in st.session_state.transcript.lower():
-            st.success(f"'{search_word}' found in transcript.")
-        else:
-            st.error(f"'{search_word}' not found.")
 
+            st.success(f"'{search_word}' found in transcript.")
+
+            highlighted = highlight_word(
+                st.session_state.transcript,
+                search_word
+            )
+
+            st.subheader("Highlighted Transcript")
+
+            st.text_area(
+                "",
+                highlighted,
+                height=200
+            )
+
+        else:
+
+            st.error(f"'{search_word}' not found.")
     st.divider()
 
     st.subheader("AI Summary")
