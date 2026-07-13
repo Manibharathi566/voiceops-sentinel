@@ -65,6 +65,42 @@ def call_statistics(text):
 
     return total_words, total_characters, speaking_time
 
+def generate_report():
+
+    report = f"""
+==============================
+VoiceOps Sentinel AI Report
+==============================
+
+Transcript
+------------------------------
+{st.session_state.transcript}
+
+AI Summary
+------------------------------
+{st.session_state.summary}
+
+Sentiment
+------------------------------
+{st.session_state.sentiment}
+
+Call Statistics
+------------------------------
+Total Words : {st.session_state.total_words}
+
+Characters : {st.session_state.total_characters}
+
+Estimated Speaking Time : {st.session_state.speaking_time} sec
+
+Top 10 Frequently Used Words
+------------------------------
+"""
+
+    for word, count in st.session_state.word_stats.items():
+        report += f"{word} : {count}\n"
+
+    return report
+
 def highlight_word(text, search_word):
 
     if not search_word:
@@ -84,8 +120,13 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🎙️ VoiceOps Sentinel")
-st.caption("AI-Powered Speech Analytics Platform")
+st.markdown(
+    """
+# 🎙️ VoiceOps Sentinel
+### AI-Powered Speech Analytics Platform
+---
+"""
+)
 
 if "transcript" not in st.session_state:
     st.session_state.transcript = ""
@@ -170,6 +211,8 @@ if transcribe_btn:
 
 if st.session_state.transcript != "":
 
+    report = generate_report()
+
     st.success("✅ Audio processed successfully!")
 
     st.subheader("Transcript")
@@ -185,6 +228,13 @@ if st.session_state.transcript != "":
         st.session_state.transcript,
         file_name="transcript.txt",
         mime="text/plain"
+    )
+
+    st.download_button(
+    "📄 Download AI Analysis Report",
+    report,
+    file_name="VoiceOps_Report.txt",
+    mime="text/plain"
     )
 
     st.divider()
