@@ -120,6 +120,43 @@ st.set_page_config(
     layout="wide"
 )
 
+
+st.sidebar.title("🎙 VoiceOps Sentinel")
+
+st.sidebar.markdown("---")
+
+st.sidebar.subheader("📌 Project Information")
+
+st.sidebar.write("**Version :** 1.0")
+
+st.sidebar.write("**Developer :** Manibharathi")
+
+st.sidebar.write("**Speech Model :** Whisper Tiny")
+
+st.sidebar.write("**Framework :** Streamlit")
+
+st.sidebar.markdown("---")
+
+st.sidebar.subheader("🚀 Features")
+
+st.sidebar.success("Speech To Text")
+
+st.sidebar.success("AI Summary")
+
+st.sidebar.success("Sentiment Analysis")
+
+st.sidebar.success("Transcript Search")
+
+st.sidebar.success("Word Frequency")
+
+st.sidebar.success("Analysis Report")
+
+st.sidebar.markdown("---")
+
+st.sidebar.info(
+    "VoiceOps Sentinel\n\n"
+    "AI Powered Speech Analytics Platform"
+)
 st.markdown(
     """
 # 🎙️ VoiceOps Sentinel
@@ -127,7 +164,6 @@ st.markdown(
 ---
 """
 )
-
 if "transcript" not in st.session_state:
     st.session_state.transcript = ""
 
