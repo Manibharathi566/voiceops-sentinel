@@ -157,6 +157,7 @@ st.sidebar.info(
     "VoiceOps Sentinel\n\n"
     "AI Powered Speech Analytics Platform"
 )
+
 st.markdown(
     """
 # 🎙️ VoiceOps Sentinel
@@ -250,6 +251,36 @@ if st.session_state.transcript != "":
     report = generate_report()
 
     st.success("✅ Audio processed successfully!")
+    
+    st.subheader("📊 AI Analysis Dashboard")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric(
+            "😊 Sentiment",
+            st.session_state.sentiment
+        )
+
+    with col2:
+        st.metric(
+            "📝 Words",
+            st.session_state.total_words
+            )
+
+    with col3:
+        st.metric(
+            "⏱ Speaking Time",
+            f"{st.session_state.speaking_time} sec"
+        )
+
+    with col4:
+        st.metric(
+            "📄 Characters",
+            st.session_state.total_characters
+        )
+
+    st.divider()
 
     st.subheader("Transcript")
 
@@ -336,29 +367,8 @@ if st.session_state.transcript != "":
     else:
         st.warning("No word frequency data available.")
 
-    st.divider()
+    
 
-    st.subheader("📊 Call Statistics")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.metric(
-        "Total Words",
-        st.session_state.total_words
-    )
-
-    with col2:
-        st.metric(
-        "Characters",
-        st.session_state.total_characters
-    )
-
-    with col3:
-        st.metric(
-        "Estimated Speaking Time",
-        f"{st.session_state.speaking_time} sec"
-    )
 
     st.subheader("📋 Audio Information")
 
