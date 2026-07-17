@@ -1,9 +1,12 @@
+from turtle import pd
+import pandas as pd
+
 import streamlit as st
 import time
 import whisper
 import os
 from textblob import TextBlob
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 
 
@@ -121,6 +124,9 @@ st.set_page_config(
 )
 
 
+
+
+
 st.sidebar.title("🎙 VoiceOps Sentinel")
 
 st.sidebar.markdown("---")
@@ -158,13 +164,52 @@ st.sidebar.info(
     "AI Powered Speech Analytics Platform"
 )
 
-st.markdown(
-    """
-# 🎙️ VoiceOps Sentinel
-### AI-Powered Speech Analytics Platform
----
-"""
+st.markdown("""
+<div style="
+background:linear-gradient(90deg,#0B1F3A,#1F4E79,#3A7BD5);
+padding:25px;
+border-radius:15px;
+text-align:center;">
+
+<h1 style="color:white;font-size:46px;margin:0;">
+🎙️ VoiceOps Sentinel
+</h1>
+
+<h3 style="color:white;">
+AI-Powered Speech Analytics Platform
+</h3>
+
+<p style="color:#EAEAEA;">
+Transforming Customer Calls into Actionable Insights
+</p>
+
+</div>
+""", unsafe_allow_html=True)
+
+
+st.info(
+    "🚀 Powered by Python | Streamlit | OpenAI Whisper | TextBlob | Plotly | FFmpeg"
 )
+
+st.divider()
+
+st.markdown(
+    "<h3 style='color:#1F4E79;'>📊 Intelligent Speech Analytics Dashboard</h3>",
+    unsafe_allow_html=True
+)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.success("🎤 **Speech Recognition**\n\nPowered by OpenAI Whisper")
+
+with col2:
+    st.info("🤖 **AI Analysis**\n\nSummary • Sentiment • Search")
+
+with col3:
+    st.warning("📊 **Business Insights**\n\nStatistics • Word Frequency")
+
+
 if "transcript" not in st.session_state:
     st.session_state.transcript = ""
 
@@ -282,6 +327,8 @@ if st.session_state.transcript != "":
 
     st.divider()
 
+    
+
     st.subheader("Transcript")
 
     st.text_area(
@@ -347,22 +394,38 @@ if st.session_state.transcript != "":
     st.subheader("📊 Top 10 Frequently Used Words")
 
     if st.session_state.word_stats:
+        
 
-        words = list(st.session_state.word_stats.keys())
-        counts = list(st.session_state.word_stats.values())
- 
-        fig, ax = plt.subplots(figsize=(10, 5))
+        df = pd.DataFrame({
+            "Word": list(st.session_state.word_stats.keys()),
+            "Frequency": list(st.session_state.word_stats.values())
+        })
 
-        ax.bar(words, counts)
+        fig = px.bar(
+            df,
+            x="Word",
+            y="Frequency",
+            text="Frequency",
+            color="Frequency",
+            color_continuous_scale="Blues",
+            title="📊 Top 10 Frequently Used Words"
+        )
 
-        ax.set_xlabel("Words") 
-        ax.set_ylabel("Frequency")
-        ax.set_title("Word Frequency")
+        fig.update_traces(
+            textposition="outside"
+        )
 
-        plt.xticks(rotation=45)
-        plt.tight_layout()
+        fig.update_layout(
+            template="plotly_white",
+            xaxis_title="Words",
+            yaxis_title="Frequency",
+            height=500,
+            title_x=0.5
+        )
 
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
+
+        
 
     else:
         st.warning("No word frequency data available.")
